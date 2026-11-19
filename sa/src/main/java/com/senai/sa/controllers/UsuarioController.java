@@ -1,26 +1,27 @@
 package com.senai.sa.controllers;
 
 import com.senai.sa.dtos.LoginDto;
+import com.senai.sa.services.UsuarioService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class UsuarioController {
+    private final UsuarioService service;
 
-    @PostMapping("/login")
-    public String realizarLogin(@ModelAttribute("loginDto") LoginDto loginDto){
-
-        System.out.println("Email: " + loginDto.getEmail());
-        System.out.println("Senha: " + loginDto.getSenha());
-        if (loginDto.getEmail().equals("aluno@senai.com") && loginDto.getSenha().equals("123")){
-            //certo
-            System.out.println("Deu certo");
-        }else {
-            //erro
-            System.out.println("Deu errado");
-        }
-        return "redirect:/login";
+    public UsuarioController(UsuarioService service) {
+        this.service = service;
     }
 
+    @PostMapping("/login")
+    public String realizarLogin(@ModelAttribute("loginDto") LoginDto loginDto, Model model){
+
+        if (service.fazendoLogin(loginDto)){
+            return "redirect:/home";
+        }
+            model.addAttribute("erro", "E-mail ou senha invalida!!!");
+            return "login";
+    }
 }
